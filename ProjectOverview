@@ -1,0 +1,195 @@
+# BlockList Manager - Project Guide
+
+## Project Overview
+
+The BlockList Manager is a web application I created to help manage domain blocklists through a user-friendly interface. The project was developed with AI assistance from ChatGPT 4.0 and Claude 3.7 Sonnet, despite having no prior coding experience.
+
+This guide provides an explanation of how the application works, the technical components involved, and what I learned during the development process.
+
+## How I Built This (Without Coding Experience)
+
+### Starting with an Idea
+
+I wanted to create a simple but effective tool for managing domain blocklists. Even without coding skills, I had a clear vision of what I wanted the application to do:
+
+1. Allow secure login to protect the blocklist
+2. Provide an interface to add multiple domains at once
+3. Automatically format and organize the domains
+4. Enable searching through existing domains
+5. Allow easy removal of unwanted domains
+
+### Working with AI Assistants
+
+With this vision in mind, I collaborated with AI assistants (ChatGPT 4.0 and Claude 3.7 Sonnet) to:
+
+1. Break down the project into manageable components
+2. Generate the necessary code for each component
+3. Understand how the pieces fit together
+4. Create an attractive, responsive design
+5. Debug issues and refine the application
+
+The AI tools helped me understand fundamental web development concepts without requiring years of programming study.
+
+## Technical Components Explained
+
+### Backend (Python/Flask)
+
+The application uses Flask, a Python web framework, to handle:
+
+- **User authentication**: Securely storing and checking login credentials
+- **Domain processing**: Cleaning and formatting domain entries
+- **File operations**: Reading and writing to the blocklist file
+- **API endpoints**: Handling web requests for different functions
+
+### Frontend (HTML/CSS/JavaScript)
+
+The user interface is built with:
+
+- **HTML templates**: Structure for the login and dashboard pages
+- **CSS styling**: Making the application visually appealing and responsive
+- **JavaScript**: Enabling dynamic features like search and confirmation dialogs
+
+### Web Server (Nginx)
+
+Nginx serves as a reverse proxy that:
+- Forwards requests to the Flask application
+- Serves static files efficiently
+- Provides an additional layer of security
+
+### Blocklist Storage
+
+The application stores domains in a simple text file at `/var/www/blocklists/blocked.txt`. This approach makes it easy to:
+- Import the blocklist into other applications
+- Back up the data
+- Modify the list manually if needed
+
+## Key Features Explained
+
+### Domain Processing
+
+The application intelligently processes domain input by:
+
+1. Accepting various formats (URL, plain domain, etc.)
+2. Removing unnecessary components (http://, www.)
+3. Creating both direct domain and wildcard entries automatically
+4. Preventing duplicates and organizing alphabetically
+
+```python
+# Domain processing example
+def process_domain_input(input_text):
+    # Replace commas with spaces
+    cleaned_input = re.sub(r',', ' ', input_text)
+    
+    # Split by lines and spaces
+    raw_domains = []
+    for line in cleaned_input.split('\n'):
+        line = line.strip()
+        if line:
+            raw_domains.extend(line.split())
+    
+    # Process each domain
+    result = []
+    for domain in raw_domains:
+        if not domain:
+            continue
+            
+        # Remove protocol (http:// or https://)
+        domain = re.sub(r'^https?://', '', domain)
+        
+        # Remove www. prefix
+        domain = re.sub(r'^www\.', '', domain)
+        
+        # Remove any path component
+        domain = domain.split('/')[0]
+        
+        # If we have a valid domain, add it and its wildcard
+        if domain and '.' in domain:
+            result.append(domain)
+            result.append(f'*.{domain}')
+    
+    return result
+```
+
+### Domain Pairing Display
+
+The application pairs each domain with its wildcard version for cleaner display:
+
+```python
+# Pairing domains with wildcards for display
+domain_pairs = []
+i = 0
+while i < len(current_domains):
+    if i+1 < len(current_domains) and current_domains[i+1] == f'*.{current_domains[i]}':
+        domain_pairs.append((current_domains[i], current_domains[i+1]))
+        i += 2
+    else:
+        domain_pairs.append((current_domains[i], None))
+        i += 1
+```
+
+### Search Functionality
+
+The application includes real-time search with highlights:
+
+```javascript
+// Filter domains based on search input
+function filterDomains() {
+    const searchInput = document.getElementById('domain-search');
+    const filter = searchInput.value.toLowerCase();
+    const table = document.getElementById('domain-table');
+    const tr = table.getElementsByTagName('tr');
+    let visibleCount = 0;
+    
+    // Loop through all table rows (skip header row)
+    for (let i = 1; i < tr.length; i++) {
+        const domainCell = tr[i].getElementsByClassName('domain-cell')[0];
+        if (domainCell) {
+            const domainText = domainCell.textContent || domainCell.innerText;
+            if (domainText.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = '';
+                visibleCount++;
+                
+                // Highlight matching text
+                if (filter) {
+                    highlightText(domainCell, filter);
+                }
+            } else {
+                tr[i].style.display = 'none';
+            }
+        }
+    }
+}
+```
+
+## Lessons Learned
+
+This project taught me several important concepts:
+
+1. **Web Application Architecture**: Understanding how frontend and backend components interact
+2. **Authentication Systems**: Learning about secure login processes
+3. **HTTP Requests**: Grasping how data moves between client and server
+4. **Responsive Design**: Creating interfaces that work on different devices
+5. **Regular Expressions**: Using pattern matching to process text
+6. **System Administration**: Setting up services and configuring a web server
+
+Most importantly, I learned that with modern AI tools, creating functional software is possible even without formal programming education.
+
+## Future Enhancements
+
+Some features I'm considering adding in the future:
+
+1. **User Management**: Support for multiple users with different permissions
+2. **Export/Import**: Tools to backup and restore blocklists
+3. **Categories**: Ability to organize domains by category
+4. **Statistics**: Visual displays of blocking activity
+5. **API Integration**: Connecting with DNS systems or firewalls
+
+## Conclusion
+
+This project demonstrates how modern AI tools can empower non-programmers to create functional, useful applications. While I started with no coding knowledge, collaborating with AI assistants allowed me to build a complete web application that solves a real problem.
+
+The BlockList Manager is not just a portfolio piece—it's a practical tool that can be used in real-world network management scenarios. This project has inspired me to continue exploring what's possible with AI-assisted development.
+
+---
+
+*Created by [Your Name] with AI assistance from ChatGPT 4.0 and Claude 3.7 Sonnet*
