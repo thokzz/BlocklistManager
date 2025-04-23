@@ -6,8 +6,6 @@ A web-based application for managing domain blocklists with an intuitive user in
 
 BlockList Manager is a simple yet powerful web application that allows users to manage lists of blocked domains through a clean, user-friendly interface. The application is designed to help system administrators and privacy-conscious users maintain domain blocklists that can be integrated with DNS filtering systems, firewalls, or other network security tools.
 
-**Created by:** [Your Name]
-
 **Tech Stack:**
 - Backend: Python with Flask
 - Frontend: HTML, CSS, JavaScript
